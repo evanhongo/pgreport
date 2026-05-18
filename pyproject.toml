@@ -1,0 +1,25 @@
+[project]
+name = "pgreport"
+version = "0.1.0"
+description = "PostgreSQL diagnostic reporting"
+requires-python = ">=3.10"
+dependencies = [
+    "click>=8.0",
+    "psycopg[binary,pool]>=3.1.0",
+    "pglast>=7.10",
+    'tomli>=1.0; python_version < "3.11"',
+]
+
+[project.scripts]
+pgreport = "pgreport._entry:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pgreport"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
