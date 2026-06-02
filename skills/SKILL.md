@@ -15,6 +15,17 @@ pgreport [--database-uri URI] [--json] <command> [--flags...]
 
 Run `pgreport <command> --help` for full option details.
 
+## Connection — read before running anything
+
+**pgreport carries its own connection config. You almost never pass `--database-uri`.**
+
+- Targets live in `~/.config/pgreport/config.toml`; `active_source` selects the current one. Just run `pgreport <command>` and it connects to the active source — **zero setup. Your first action is always to run the command, never to go hunting for a connection.**
+- Switch target: `pgreport source ls` (list + interactive switch) or `pgreport source use <name>` (non-interactive). One-off override: `pgreport --database-uri '<uri>' <command>`. With no config, it falls back to libpq defaults (`PG*` env, `~/.pgpass`).
+
+**Do NOT pre-assume you cannot connect.** A `postgresql` systemd unit showing `inactive`, `pg_isready` returning "no response" on the unix socket, the database running in Docker, or simply not knowing a password — **none of these block pgreport.** It reaches the active source over TCP. Run the command first; react only to an *actual* connection error in pgreport's output.
+
+**Never manufacture credentials to build your own URI.** No `docker inspect`, no reading container env vars, no `docker exec psql` to bypass auth. These leak secrets and are not how pgreport connects. If pgreport genuinely cannot connect, report the error and ask the user for a source name or URI — do not work around it.
+
 ## Scenario Router
 
 | User Says | Workflow | Reference |
